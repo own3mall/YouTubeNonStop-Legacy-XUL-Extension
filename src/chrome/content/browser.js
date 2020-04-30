@@ -98,11 +98,8 @@ var YouTubeNonStopObj = {
 				if(pauseButton){
 					dateNow = new Date();
 					gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
-					if(YouTubeNonStopObj.isVisible(pauseButton)){
-						if(extraInfo){
-							log("YouTubeNonStop: YouTube pause confirmation button detected on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!  Clicking it now...");
-						}						
-						log("YouTubeNonStop: Clicking on continue button now on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+					if(YouTubeNonStopObj.isVisible(pauseButton)){						
+						log("YouTubeNonStop: Resuming playback and clicking on the confirm button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 						pauseButton.click();
 						YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 					}
