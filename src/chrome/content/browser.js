@@ -73,7 +73,6 @@ var YouTubeNonStopObj = {
 						}
 					}
 				}, true);
-				gBrowser.removeEventListener("load", function(){}, true);
 			}
 		}, false);
 	},
