@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+
+    <em:id>own3mall0@gmail.com</em:id>
+    <em:name>YouTubeNonStop</em:name>
+    <em:description>Kiss the annoying "Video paused. Continue watching?" confirmation goodbye!</em:description>
+    <em:version>0.7.1</em:version>
+    <em:type>2</em:type>
+    
+    <em:creator>lawfx</em:creator>
+    <em:homepageURL>https://github.com/own3mall</em:homepageURL>
+    <em:icon64URL>chrome://YouTubeNonStop/content/icons/yns48.png</em:icon64URL>
+    <em:iconURL>chrome://YouTubeNonStop/content/icons/yns128.png</em:iconURL>  
+ 
+    <!-- Pale Moon -->
+    <em:targetApplication>
+      <Description>
+        <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
+        <em:minVersion>27.0</em:minVersion>
+        <em:maxVersion>28.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+
+    <!-- Basilisk -->
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>52.0</em:minVersion>
+        <em:maxVersion>52.9.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+
+  </Description>
+
+
+</RDF>

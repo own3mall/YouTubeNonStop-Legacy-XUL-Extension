@@ -1,0 +1,19 @@
+<html>
+	<head>
+		<!-- <script src="chrome/content/browser_test.js"></script> -->
+		<!-- <meta http-equiv="refresh" content="30; url=index.html"> -->
+		<script>
+		function showHide(){
+			var x = document.getElementById('confirm-button')
+			if (x.style.display === "none") {
+				x.style.display = "block";
+			} else {
+				x.style.display = "none";
+			}
+		}
+		</script>
+	</head>
+	<body>
+		<button id="confirm-button" onclick="alert('clicked');">Go</button><button class="showHide" onclick="showHide()">Show or Hide</button>
+	</body>
+</html>
