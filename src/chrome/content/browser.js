@@ -37,44 +37,46 @@ var YouTubeNonStopObj = {
 	init: function(){
 		window.addEventListener("load", function () {
 			if( typeof gBrowser !== 'undefined' && gBrowser !== null){
-				gBrowser.addEventListener("load", function (event) {
-					// this is the content document of the loaded page.
-					let doc = event.originalTarget;
-
-					if (doc instanceof HTMLDocument) {
-						// is this an inner frame?
-						if (doc.defaultView.frameElement) {
-							// Frame within a tab was loaded.
-							// Find the root document:
-							while (doc.defaultView.frameElement) {
-								doc = doc.defaultView.frameElement.ownerDocument;
-							}
-						}
-					}
-					
-					var dmn = doc.defaultView.location.href;
-				  
-					// log("YouTubeNonStop: Page domain is " + dmn);
-					if(dmn.match(matchStr) || debug){
-						if(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL.match(matchStr) || debug){
-							foundUrlIndex = arrayUrls.indexOf(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL)
-							if(foundUrlIndex != -1){
-								if(extraInfo){
-									log("YouTubeNonStop: YouTube duplicate instance detected. Removing previous reference!");
-								}
-								YouTubeNonStopObj.removeDup(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL, foundUrlIndex);
-							}
-							
-							arrayOfDoms.push(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument);
-							arrayOfTabs.push(gBrowser.selectedTab);
-							arrayUrls.push(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL);
-							log("YouTubeNonStop: YouTube detected. Running monitoring code to detect pause notification!");
-							YouTubeNonStopObj.youTubeMonitor();
-						}
-					}
-				}, true);
+				gBrowser.removeEventListener("load", YouTubeNonStopObj.initCore, true);
+				gBrowser.addEventListener("load", YouTubeNonStopObj.initCore, true);
 			}
 		}, false);
+	},
+	initCore: function(event){
+		// this is the content document of the loaded page.
+		let doc = event.originalTarget;
+
+		if (doc instanceof HTMLDocument) {
+			// is this an inner frame?
+			if (doc.defaultView.frameElement) {
+				// Frame within a tab was loaded.
+				// Find the root document:
+				while (doc.defaultView.frameElement) {
+					doc = doc.defaultView.frameElement.ownerDocument;
+				}
+			}
+		}
+					
+		var dmn = doc.defaultView.location.href;
+				  
+		// log("YouTubeNonStop: Page domain is " + dmn);
+		if(dmn.match(matchStr) || debug){
+			if(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL.match(matchStr) || debug){
+				foundUrlIndex = arrayUrls.indexOf(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL)
+				if(foundUrlIndex != -1){
+					if(extraInfo){
+						log("YouTubeNonStop: YouTube duplicate instance detected. Removing previous reference!");
+					}
+					YouTubeNonStopObj.removeDup(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL, foundUrlIndex);
+				}
+					
+				arrayOfDoms.push(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument);
+				arrayOfTabs.push(gBrowser.selectedTab);
+				arrayUrls.push(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL);
+				log("YouTubeNonStop: YouTube detected. Running monitoring code to detect pause notification!");
+				YouTubeNonStopObj.youTubeMonitor();
+			}
+		}
 	},
 	youTubeMonitor: function(){
 		clearInterval(interval);
