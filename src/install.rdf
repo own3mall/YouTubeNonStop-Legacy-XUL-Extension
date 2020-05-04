@@ -11,7 +11,7 @@
     <em:version>0.7.1</em:version>
     <em:type>2</em:type>
     
-    <em:creator>lawfx</em:creator>
+    <em:creator>own3mall</em:creator>
     <em:homepageURL>https://github.com/own3mall</em:homepageURL>
     <em:icon64URL>chrome://YouTubeNonStop/content/icons/yns48.png</em:icon64URL>
     <em:iconURL>chrome://YouTubeNonStop/content/icons/yns128.png</em:iconURL>  
@@ -21,7 +21,7 @@
       <Description>
         <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
         <em:minVersion>27.0</em:minVersion>
-        <em:maxVersion>28.*</em:maxVersion>
+        <em:maxVersion>29.*</em:maxVersion>
       </Description>
     </em:targetApplication>
 
