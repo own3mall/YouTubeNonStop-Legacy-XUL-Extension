@@ -49,11 +49,11 @@ var YouTubeNonStopObj = {
 		if(typeof searchBar !== 'undefined' && searchBar !== null){
 			searchBar.onfocus = function() {
 				isTypingInSearchBox = true;
-				log("YouTubeNonStop: Search bar in use.");
+				// log("YouTubeNonStop: Search bar in use.");
 			};
 			searchBar.onblur = function() {
 				isTypingInSearchBox = false;
-				log("YouTubeNonStop: Search bar no longer being used.");
+				// log("YouTubeNonStop: Search bar no longer being used.");
 			};
 		}
 	},
