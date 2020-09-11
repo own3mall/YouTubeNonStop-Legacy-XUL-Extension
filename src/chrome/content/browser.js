@@ -86,53 +86,57 @@ var YouTubeNonStopObj = {
 		}, 5000);
 	},
 	pauseContinue: function(){
+		currentTab = gBrowser.selectedTab;		
 		shouldSwitchTab = false;
-		if(extraInfo){
-			dateNow = new Date();
-			log("YouTubeNonStop: Checking for pause button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US'));
-		}
-		
 		toRemove = new Array();
-		currentTab = gBrowser.selectedTab;
-		for(i = 0; i < arrayOfDoms.length; i++){
-			if(!Components.utils.isDeadWrapper(arrayOfDoms[i])){ // Dead check
-				// Check for pause button
-				pauseButton = arrayOfDoms[i].getElementById('confirm-button');
-				if(pauseButton){
-					dateNow = new Date();
-					gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
-					if(YouTubeNonStopObj.isVisible(pauseButton)){						
-						log("YouTubeNonStop: Resuming playback and clicking on the confirm button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
-						pauseButton.click();
-						YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
-					}
-					shouldSwitchTab = true;
-				}
-				
-				// Check for login nag screen
-				signInButton = arrayOfDoms[i].getElementById('dismiss-button');
-				if(signInButton){
-					dateNow = new Date();
-					gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
-					if(YouTubeNonStopObj.isVisible(signInButton)){						
-						log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
-						signInButton.click();
-						YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
-					}
-					shouldSwitchTab = true;
-				}
-			}else{
-				toRemove.push(i);
+
+		// Only perform the check if the URL and search bar are not focused!!!!
+		if(!gURLBar.focused){
+			if(extraInfo){
+				dateNow = new Date();
+				log("YouTubeNonStop: Checking for pause button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US'));
 			}
-		}
-		
-		if(shouldSwitchTab){
-			gBrowser.selectedTab = currentTab;
-		}
-		
-		if(toRemove.length){
-			for(i = 0; i < toRemove.length; i++){
-				arrayOfDoms.splice(toRemove[i], 1);
+			
+			for(i = 0; i < arrayOfDoms.length; i++){
+				if(!Components.utils.isDeadWrapper(arrayOfDoms[i])){ // Dead check
+					// Check for pause button
+					pauseButton = arrayOfDoms[i].getElementById('confirm-button');
+					if(pauseButton){
+						dateNow = new Date();
+						gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
+						if(YouTubeNonStopObj.isVisible(pauseButton)){						
+							log("YouTubeNonStop: Resuming playback and clicking on the confirm button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+							pauseButton.click();
+							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
+						}
+						shouldSwitchTab = true;
+					}
+					
+					// Check for login nag screen
+					signInButton = arrayOfDoms[i].getElementById('dismiss-button');
+					if(signInButton){
+						dateNow = new Date();
+						gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
+						if(YouTubeNonStopObj.isVisible(signInButton)){						
+							log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+							signInButton.click();
+							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
+						}
+						shouldSwitchTab = true;
+					}
+				}else{
+					toRemove.push(i);
+				}
+			}
+			
+			if(shouldSwitchTab){
+				gBrowser.selectedTab = currentTab;
+			}
+			
+			if(toRemove.length){
+				for(i = 0; i < toRemove.length; i++){
+					arrayOfDoms.splice(toRemove[i], 1);
+				}
 			}
 		}
 	},
