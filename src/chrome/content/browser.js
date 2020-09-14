@@ -18,6 +18,7 @@ var arrayOfTabs = new Array();
 var arrayUrls = new Array();
 var pauseButton = null;
 var signInButton = null;
+var agreeButton = null;
 var i = 0;
 var toRemove = new Array();
 var foundUrlIndex;
@@ -144,6 +145,20 @@ var YouTubeNonStopObj = {
 						}
 						shouldSwitchTab = true;
 					}
+					
+					// Check for agree button nag screen
+					agreeButton = arrayOfDoms[i].getElementById('introAgreeButton');
+					if(agreeButton){
+						dateNow = new Date();
+						gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
+						if(YouTubeNonStopObj.isVisible(agreeButton)){						
+							log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+							agreeButton.click();
+							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
+						}
+						shouldSwitchTab = true;
+					}
+					
 				}else{
 					toRemove.push(i);
 				}
