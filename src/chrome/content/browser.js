@@ -28,6 +28,7 @@ var currentTab = null;
 var shouldSwitchTab = false;
 var initEvent = null;
 var isTypingInSearchBox = false;
+var aButton = null;
 
 /* Functions */
 
@@ -128,7 +129,10 @@ var YouTubeNonStopObj = {
 						if(YouTubeNonStopObj.isVisible(pauseButton)){						
 							log("YouTubeNonStop: Resuming playback and clicking on the confirm button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							pauseButton.click();
-							pauseButton.getElementsByTagName('a')[0].click();
+							aButton = pauseButton.getElementsByTagName('a');
+							if(aButton && aButton.length){
+								aButton[0].click();
+							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
 						shouldSwitchTab = true;
@@ -142,7 +146,10 @@ var YouTubeNonStopObj = {
 						if(YouTubeNonStopObj.isVisible(signInButton)){						
 							log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							signInButton.click();
-							signInButton.getElementsByTagName('a')[0].click();
+							aButton = signInButton.getElementsByTagName('a');
+							if(aButton && aButton.length){
+								aButton[0].click();
+							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
 						shouldSwitchTab = true;
@@ -156,7 +163,10 @@ var YouTubeNonStopObj = {
 						if(YouTubeNonStopObj.isVisible(agreeButton)){						
 							log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							agreeButton.click();
-							agreeButton.getElementsByTagName('a')[0].click();
+							aButton = agreeButton.getElementsByTagName('a');
+							if(aButton && aButton.length){
+								aButton[0].click();
+							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
 						shouldSwitchTab = true;
