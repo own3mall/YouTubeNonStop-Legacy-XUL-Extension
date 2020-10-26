@@ -20,6 +20,7 @@ var pauseButton = null;
 var signInButton = null;
 var agreeButton = null;
 var i = 0;
+var j = 0;
 var toRemove = new Array();
 var foundUrlIndex;
 var foundButton;
@@ -123,7 +124,7 @@ var YouTubeNonStopObj = {
 				if(!Components.utils.isDeadWrapper(arrayOfDoms[i])){ // Dead check
 					// Check for pause button
 					pauseButton = arrayOfDoms[i].getElementById('confirm-button');
-					if(pauseButton){
+					if(pauseButton && YouTubeNonStopObj.isVideoPaused(arrayOfDoms[i], arrayOfTabs[i])){
 						dateNow = new Date();
 						gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
 						if(YouTubeNonStopObj.isVisible(pauseButton)){						
@@ -135,6 +136,35 @@ var YouTubeNonStopObj = {
 							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
+
+						// Remove any paper dialogs
+						/*
+						var paperDiagFound = false;
+						var paperDiags = arrayOfDoms[i].getElementsByTagName("paper-dialog");
+						if(paperDiags && paperDiags.length){
+							paperDiagFound = true;
+							for(j = 0; j < paperDiags.length; j++){
+								paperDiags[j].remove();
+							}
+						}
+						
+						var overlays = arrayOfDoms[i].getElementsByTagName("iron-a11y-announcer");
+						if(overlays && overlays.length){
+							paperDiagFound = true;
+							for(j = 0; j < paperDiags.length; j++){
+								overlays[j].remove();
+							}
+						}
+						
+						overlays = arrayOfDoms[i].getElementsByTagName("iron-overlay-backdrop");
+						if(overlays && overlays.length){
+							paperDiagFound = true;
+							for(j = 0; j < paperDiags.length; j++){
+								overlays[j].remove();
+							}
+						}
+						*/
+					
 						shouldSwitchTab = true;
 					}
 					
@@ -146,9 +176,11 @@ var YouTubeNonStopObj = {
 						if(YouTubeNonStopObj.isVisible(signInButton)){						
 							log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							signInButton.click();
+							signInButton.remove();
 							aButton = signInButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
 								aButton[0].click();
+								aButton[0].remove();
 							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
@@ -163,15 +195,17 @@ var YouTubeNonStopObj = {
 						if(YouTubeNonStopObj.isVisible(agreeButton)){						
 							log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							agreeButton.click();
+							agreeButton.remove();
 							aButton = agreeButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
 								aButton[0].click();
+								aButton[0].remove();
 							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
 						shouldSwitchTab = true;
 					}
-					
+										
 				}else{
 					toRemove.push(i);
 				}
@@ -210,6 +244,23 @@ var YouTubeNonStopObj = {
 				ytVideo.click();
 			}
 		}
+	},
+	isVideoPaused: function(element, tab){
+		ytVideo = null;
+		
+		// Video paused?
+		ytVideo = element.querySelector('video');
+		if(ytVideo && ytVideo.paused){
+			return true;
+		}
+		
+		// audio paused?
+		ytVideo = element.querySelector('audio');
+		if(ytVideo && ytVideo.paused){
+			return true;
+		}
+						
+		return false;
 	},
 	isVisible: function(element){
 		return (element.offsetWidth > 0 || element.offsetHeight > 0)
