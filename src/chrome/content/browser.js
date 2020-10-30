@@ -176,11 +176,11 @@ var YouTubeNonStopObj = {
 						if(YouTubeNonStopObj.isVisible(signInButton)){						
 							log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							signInButton.click();
-							signInButton.remove();
+							//signInButton.remove();
 							aButton = signInButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
 								aButton[0].click();
-								aButton[0].remove();
+								//aButton[0].remove();
 							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
@@ -195,11 +195,11 @@ var YouTubeNonStopObj = {
 						if(YouTubeNonStopObj.isVisible(agreeButton)){						
 							log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							agreeButton.click();
-							agreeButton.remove();
+							//agreeButton.remove();
 							aButton = agreeButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
 								aButton[0].click();
-								aButton[0].remove();
+								//aButton[0].remove();
 							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
