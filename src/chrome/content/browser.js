@@ -124,10 +124,10 @@ var YouTubeNonStopObj = {
 				if(!Components.utils.isDeadWrapper(arrayOfDoms[i])){ // Dead check
 					// Check for pause button
 					pauseButton = arrayOfDoms[i].getElementById('confirm-button');
-					if(pauseButton && YouTubeNonStopObj.isVideoPaused(arrayOfDoms[i], arrayOfTabs[i])){
+					if(pauseButton){
 						dateNow = new Date();
-						gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
-						if(YouTubeNonStopObj.isVisible(pauseButton)){						
+						var closestPaperDiag = pauseButton.closest('paper-dialog');
+						if(closestPaperDiag && closestPaperDiag != null && !closestPaperDiag.getAttribute("aria-hidden")){						
 							log("YouTubeNonStop: Resuming playback and clicking on the confirm button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							pauseButton.click();
 							aButton = pauseButton.getElementsByTagName('a');
@@ -136,74 +136,36 @@ var YouTubeNonStopObj = {
 							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
-
-						// Remove any paper dialogs
-						/*
-						var paperDiagFound = false;
-						var paperDiags = arrayOfDoms[i].getElementsByTagName("paper-dialog");
-						if(paperDiags && paperDiags.length){
-							paperDiagFound = true;
-							for(j = 0; j < paperDiags.length; j++){
-								paperDiags[j].remove();
-							}
-						}
-						
-						var overlays = arrayOfDoms[i].getElementsByTagName("iron-a11y-announcer");
-						if(overlays && overlays.length){
-							paperDiagFound = true;
-							for(j = 0; j < paperDiags.length; j++){
-								overlays[j].remove();
-							}
-						}
-						
-						overlays = arrayOfDoms[i].getElementsByTagName("iron-overlay-backdrop");
-						if(overlays && overlays.length){
-							paperDiagFound = true;
-							for(j = 0; j < paperDiags.length; j++){
-								overlays[j].remove();
-							}
-						}
-						*/
-					
-						shouldSwitchTab = true;
 					}
 					
 					// Check for login nag screen
 					signInButton = arrayOfDoms[i].getElementById('dismiss-button');
 					if(signInButton){
 						dateNow = new Date();
-						gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
 						if(YouTubeNonStopObj.isVisible(signInButton)){						
 							log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							signInButton.click();
-							//signInButton.remove();
 							aButton = signInButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
 								aButton[0].click();
-								//aButton[0].remove();
 							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
-						shouldSwitchTab = true;
 					}
 					
 					// Check for agree button nag screen
 					agreeButton = arrayOfDoms[i].getElementById('introAgreeButton');
 					if(agreeButton){
 						dateNow = new Date();
-						gBrowser.selectedTab = arrayOfTabs[i]; // Change to tab and set focus
 						if(YouTubeNonStopObj.isVisible(agreeButton)){						
 							log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							agreeButton.click();
-							//agreeButton.remove();
 							aButton = agreeButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
 								aButton[0].click();
-								//aButton[0].remove();
 							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
-						shouldSwitchTab = true;
 					}
 										
 				}else{
@@ -212,6 +174,7 @@ var YouTubeNonStopObj = {
 			}
 			
 			if(shouldSwitchTab){
+				log("YouTubeNonStop: Switching back to originally active tab on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 				gBrowser.selectedTab = currentTab;
 			}
 			
@@ -223,25 +186,27 @@ var YouTubeNonStopObj = {
 		}
 	},
 	playAudio: function(element, tab, playVideo){
-		ytVideo = null;
-		
-		// Hide pause notification
-		foundButton = element.querySelector('paper-dialog.style-scope');
-		if(foundButton){
-			foundButton.style.display = "none";
-		}
-		
-		if(playVideo){			
-			// Play the video
-			ytVideo = element.querySelector('video');
-			if(ytVideo){
-				ytVideo.play();
+		if(YouTubeNonStopObj.isVideoPaused(element, tab)){
+			ytVideo = null;
+			
+			// Hide pause notification
+			foundButton = element.querySelector('paper-dialog.style-scope');
+			if(foundButton){
+				foundButton.style.display = "none";
 			}
-						
-			// Play audio for YouTube music
-			ytVideo = element.querySelector('.ytp-unmute');
-			if(ytVideo){
-				ytVideo.click();
+			
+			if(playVideo){			
+				// Play the video
+				ytVideo = element.querySelector('video');
+				if(ytVideo){
+					ytVideo.play();
+				}
+							
+				// Play audio for YouTube music
+				ytVideo = element.querySelector('.ytp-unmute');
+				if(ytVideo){
+					ytVideo.click();
+				}
 			}
 		}
 	},
@@ -251,12 +216,14 @@ var YouTubeNonStopObj = {
 		// Video paused?
 		ytVideo = element.querySelector('video');
 		if(ytVideo && ytVideo.paused){
+			log("YouTubeNonStop: Video detected as paused!");
 			return true;
 		}
 		
 		// audio paused?
 		ytVideo = element.querySelector('audio');
 		if(ytVideo && ytVideo.paused){
+			log("YouTubeNonStop: Audio detected as paused!");
 			return true;
 		}
 						
