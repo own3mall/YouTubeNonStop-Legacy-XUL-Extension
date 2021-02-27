@@ -30,6 +30,7 @@ var shouldSwitchTab = false;
 var initEvent = null;
 var isTypingInSearchBox = false;
 var aButton = null;
+var closestPaperDiag;
 
 /* Functions */
 
@@ -126,7 +127,7 @@ var YouTubeNonStopObj = {
 					pauseButton = arrayOfDoms[i].getElementById('confirm-button');
 					if(pauseButton){
 						dateNow = new Date();
-						var closestPaperDiag = pauseButton.closest('paper-dialog');
+						closestPaperDiag = pauseButton.closest('paper-dialog');
 						if(closestPaperDiag && closestPaperDiag != null && !closestPaperDiag.getAttribute("aria-hidden")){						
 							log("YouTubeNonStop: Resuming playback and clicking on the confirm button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							pauseButton.click();
@@ -153,11 +154,25 @@ var YouTubeNonStopObj = {
 						}
 					}
 					
+					// Check for randomly appearing login nag screen
+					signInButton = arrayOfDoms[i].querySelector('div.yt-player-error-message-renderer div#dismiss-button');
+					if(signInButton){
+						dateNow = new Date();					
+						log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube randomly appearing signin nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+						signInButton.click();
+						aButton = signInButton.getElementsByTagName('a');
+						if(aButton && aButton.length){
+							aButton[0].click();
+						}
+						YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
+					}
+					
 					// Check for agree button nag screen
 					agreeButton = arrayOfDoms[i].getElementById('introAgreeButton');
 					if(agreeButton){
+						closestPaperDiag = agreeButton.closest('paper-dialog');
 						dateNow = new Date();
-						if(YouTubeNonStopObj.isVisible(agreeButton)){						
+						if(closestPaperDiag && closestPaperDiag != null && !closestPaperDiag.getAttribute("aria-hidden")){						
 							log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							agreeButton.click();
 							aButton = agreeButton.getElementsByTagName('a');
