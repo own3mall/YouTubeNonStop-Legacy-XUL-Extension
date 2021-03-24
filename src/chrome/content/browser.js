@@ -8,7 +8,7 @@
 var debug = false; // Set to true to make it work on any page (test using the index.html file included in this xpi)
 var extraInfo = false; // Set to true for more logging
 var interval = null;
-var matchStr = /youtube.com/;
+var matchStr = "youtube.com";
 
 
 // Global Non-Settings
@@ -16,6 +16,7 @@ var dateNow = new Date();
 var arrayOfDoms = new Array();
 var arrayOfTabs = new Array();
 var arrayUrls = new Array();
+var arrayUrlsToTrack = new Array();
 var pauseButton = null;
 var signInButton = null;
 var agreeButton = null;
@@ -31,6 +32,11 @@ var initEvent = null;
 var isTypingInSearchBox = false;
 var aButton = null;
 var closestPaperDiag;
+var tabContainer;
+var tabs;
+var tabUrl;
+var tab;
+var runningLoopDetection = false;
 
 /* Functions */
 
@@ -42,66 +48,38 @@ function log(str){
 /* MAIN CODE */
 var YouTubeNonStopObj = {
 	init: function(){
-		window.addEventListener("load", function () {
-			if( typeof gBrowser !== 'undefined' && gBrowser !== null){
-				gBrowser.removeEventListener("load", YouTubeNonStopObj.initCore, true);
-				gBrowser.addEventListener("load", YouTubeNonStopObj.initCore, true);
-			}
-		}, false);
-		
-		var searchBar = window.document.getElementById("searchbar");
-		if(typeof searchBar !== 'undefined' && searchBar !== null){
-			searchBar.onfocus = function() {
-				isTypingInSearchBox = true;
-				// log("YouTubeNonStop: Search bar in use.");
-			};
-			searchBar.onblur = function() {
-				isTypingInSearchBox = false;
-				// log("YouTubeNonStop: Search bar no longer being used.");
-			};
-		}
+		YouTubeNonStopObj.youTubeMonitor();
 	},
-	initCore: function(event){
-		//initEvent = event;
-		//log(initEvent);
-		
-		if(typeof event.originalTarget !== 'undefined' && typeof event.originalTarget.defaultView !== 'undefined'){
-		
-			// this is the content document of the loaded page.
-			let doc = event.originalTarget;
-
-			if (doc instanceof HTMLDocument) {
-				// is this an inner frame?
-				if (doc.defaultView.frameElement) {
-					// Frame within a tab was loaded.
-					// Find the root document:
-					while (doc.defaultView.frameElement) {
-						doc = doc.defaultView.frameElement.ownerDocument;
-					}
-				}
-			}
-						
-			var dmn = doc.defaultView.location.href;
-					  
-			// log("YouTubeNonStop: Page domain is " + dmn);
-			if(dmn.match(matchStr) || debug){
-				if(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL.match(matchStr) || debug){
-					foundUrlIndex = arrayUrls.indexOf(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL)
-					if(foundUrlIndex != -1){
-						if(extraInfo){
-							log("YouTubeNonStop: YouTube duplicate instance detected. Removing previous reference!");
+	loopThroughTabsLookingForYouTube: function(){
+		if( typeof gBrowser !== 'undefined' && gBrowser !== null){
+			if(!runningLoopDetection){
+				arrayOfDoms = new Array();
+				arrayOfTabs = new Array();
+				arrayUrls = new Array();
+				
+				runningLoopDetection = true;
+				tabContainer = gBrowser.tabContainer;
+				if(tabContainer){
+					tabs = tabContainer.childNodes;
+					if(tabs && tabs.length){
+						for(i = 0; i < tabs.length; i++){
+							tabUrl = gBrowser.getBrowserForTab(tabs[i]).contentDocument.URL;
+							tab = gBrowser.getBrowserForTab(tabs[i]).contentDocument;
+							if(tabUrl.toLowerCase().indexOf(matchStr) != -1){						
+								arrayOfDoms.push(tab);
+								arrayOfTabs.push(tabs[i]);
+								arrayUrls.push(tabUrl);
+								if(arrayUrlsToTrack.indexOf(tabUrl) == -1){
+									log("YouTubeNonStop: YouTube detected on URL \"" + tabUrl + "\" from triggered event. Running monitoring code to detect pause notification!");
+									arrayUrlsToTrack.push(tabUrl);
+								}
+							}
 						}
-						YouTubeNonStopObj.removeDup(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL, foundUrlIndex);
 					}
-						
-					arrayOfDoms.push(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument);
-					arrayOfTabs.push(gBrowser.selectedTab);
-					arrayUrls.push(gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL);
-					log("YouTubeNonStop: YouTube detected on URL \"" + gBrowser.getBrowserForTab(gBrowser.selectedTab).contentDocument.URL + "\". Running monitoring code to detect pause notification!");
-					YouTubeNonStopObj.youTubeMonitor();
 				}
 			}
 		}
+		runningLoopDetection = false;
 	},
 	youTubeMonitor: function(){
 		clearInterval(interval);
@@ -109,14 +87,19 @@ var YouTubeNonStopObj = {
 			YouTubeNonStopObj.pauseContinue();
 		}, 5000);
 	},
+	getLocalizedDate: function(){
+		return dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US');
+	},
 	pauseContinue: function(){
 		currentTab = gBrowser.selectedTab;		
 		shouldSwitchTab = false;
 		toRemove = new Array();
+		
+		YouTubeNonStopObj.loopThroughTabsLookingForYouTube();
 
 		// Only perform the check if the URL and search bar are not focused!!!!
 		if(!gURLBar.focused && !isTypingInSearchBox){
-			if(extraInfo){
+			if(debug && extraInfo){
 				dateNow = new Date();
 				log("YouTubeNonStop: Checking for pause button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US'));
 			}
@@ -128,8 +111,14 @@ var YouTubeNonStopObj = {
 					if(pauseButton){
 						dateNow = new Date();
 						closestPaperDiag = pauseButton.closest('paper-dialog');
+						
+						// Try new YouTube element format
+						if(!closestPaperDiag || closestPaperDiag == null){
+							closestPaperDiag = pauseButton.closest('tp-yt-paper-dialog');
+						}
+											
 						if(closestPaperDiag && closestPaperDiag != null && !closestPaperDiag.getAttribute("aria-hidden")){						
-							log("YouTubeNonStop: Resuming playback and clicking on the confirm button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+							log("YouTubeNonStop: Resuming playback and clicking on the confirm button on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + " for YouTube instance with the URL of " + arrayUrls[i] + "!");
 							pauseButton.click();
 							aButton = pauseButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
@@ -144,7 +133,7 @@ var YouTubeNonStopObj = {
 					if(signInButton){
 						dateNow = new Date();
 						if(YouTubeNonStopObj.isVisible(signInButton)){						
-							log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+							log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							signInButton.click();
 							aButton = signInButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
@@ -158,7 +147,7 @@ var YouTubeNonStopObj = {
 					signInButton = arrayOfDoms[i].querySelector('div.yt-player-error-message-renderer div#dismiss-button');
 					if(signInButton){
 						dateNow = new Date();					
-						log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube randomly appearing signin nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+						log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube randomly appearing signin nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 						signInButton.click();
 						aButton = signInButton.getElementsByTagName('a');
 						if(aButton && aButton.length){
@@ -171,9 +160,15 @@ var YouTubeNonStopObj = {
 					agreeButton = arrayOfDoms[i].getElementById('introAgreeButton');
 					if(agreeButton){
 						closestPaperDiag = agreeButton.closest('paper-dialog');
+						
+						// Try new YouTube element format
+						if(!closestPaperDiag || closestPaperDiag == null){
+							closestPaperDiag = pauseButton.closest('tp-yt-paper-dialog');
+						}
+						
 						dateNow = new Date();
 						if(closestPaperDiag && closestPaperDiag != null && !closestPaperDiag.getAttribute("aria-hidden")){						
-							log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+							log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							agreeButton.click();
 							aButton = agreeButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
@@ -196,6 +191,8 @@ var YouTubeNonStopObj = {
 			if(toRemove.length){
 				for(i = 0; i < toRemove.length; i++){
 					arrayOfDoms.splice(toRemove[i], 1);
+					arrayOfTabs.splice(toRemove[i], 1);
+					arrayUrls.splice(toRemove[i], 1);
 				}
 			}
 		}
@@ -228,17 +225,19 @@ var YouTubeNonStopObj = {
 	isVideoPaused: function(element, tab){
 		ytVideo = null;
 		
+		var urlOfTab = gBrowser.getBrowserForTab(tab).contentDocument.URL;
+		
 		// Video paused?
 		ytVideo = element.querySelector('video');
 		if(ytVideo && ytVideo.paused){
-			log("YouTubeNonStop: Video detected as paused!");
+			log("YouTubeNonStop: Video detected as paused on URL " + urlOfTab + "!");
 			return true;
 		}
 		
-		// audio paused?
+		// Audio paused?
 		ytVideo = element.querySelector('audio');
 		if(ytVideo && ytVideo.paused){
-			log("YouTubeNonStop: Audio detected as paused!");
+			log("YouTubeNonStop: Audio detected as paused on URL " + urlOfTab + "!");
 			return true;
 		}
 						
@@ -246,25 +245,6 @@ var YouTubeNonStopObj = {
 	},
 	isVisible: function(element){
 		return (element.offsetWidth > 0 || element.offsetHeight > 0)
-	},
-	removeDup: function(url, foundUrlIndex){
-		toRemove = new Array();
-		for(i = 0; i < arrayOfDoms.length; i++){
-			if(!Components.utils.isDeadWrapper(arrayOfDoms[i])){ // Dead check
-				if(arrayOfDoms[i].URL == url){
-					toRemove.push(i);
-				}
-			}else{
-				toRemove.push(i);
-			}
-		}
-		if(toRemove.length){
-			for(i = 0; i < toRemove.length; i++){
-				arrayOfDoms.splice(toRemove[i], 1);
-			}
-		}
-		
-		arrayUrls.splice(foundUrlIndex, 1);
 	}
 };
 
