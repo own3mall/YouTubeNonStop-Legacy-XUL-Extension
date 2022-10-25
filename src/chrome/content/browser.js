@@ -9,6 +9,7 @@ var debug = false; // Set to true to make it work on any page (test using the in
 var extraInfo = false; // Set to true for more logging
 var interval = null;
 var matchStr = "youtube.com";
+var ignoredAreas = new Array('youtube.com/c/', 'youtube.com/c', 'youtube.com/channel/', 'studio.youtube.com', 'youtube.com/account', 'youtube.com/user/');
 
 
 // Global Non-Settings
@@ -65,7 +66,7 @@ var YouTubeNonStopObj = {
 						for(i = 0; i < tabs.length; i++){
 							tabUrl = gBrowser.getBrowserForTab(tabs[i]).contentDocument.URL;
 							tab = gBrowser.getBrowserForTab(tabs[i]).contentDocument;
-							if(tabUrl.toLowerCase().indexOf(matchStr) != -1){						
+							if(tabUrl.toLowerCase().indexOf(matchStr) != -1 && !YouTubeNonStopObj.isYouTubeIgnoredArea(tabUrl.toLowerCase())){						
 								arrayOfDoms.push(tab);
 								arrayOfTabs.push(tabs[i]);
 								arrayUrls.push(tabUrl);
@@ -80,6 +81,15 @@ var YouTubeNonStopObj = {
 			}
 		}
 		runningLoopDetection = false;
+	},
+	isYouTubeIgnoredArea: function(url){
+		for(var k = 0; k < ignoredAreas.length; k++){
+			if(url.indexOf(ignoredAreas[k]) != -1){
+				//log("YouTubeNonStop: YouTube ignored area detected on URL \"" + url + "\"!  Skipping this page!");
+				return true;
+			}
+		}
+		return false;
 	},
 	youTubeMonitor: function(){
 		clearInterval(interval);
@@ -244,7 +254,7 @@ var YouTubeNonStopObj = {
 		return false;
 	},
 	isVisible: function(element){
-		return (element.offsetWidth > 0 || element.offsetHeight > 0)
+		return (element.offsetWidth > 0 || element.offsetHeight > 0);
 	}
 };
 
