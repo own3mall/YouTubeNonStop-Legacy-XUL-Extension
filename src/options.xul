@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <setting type="radio" pref="extensions.youtubenonstop.functionality"
+	   title="Functionality:">
+    <radiogroup>
+      <radio value="simple" label="Look for paused video / audio notification only for non-stop playback."/>
+      <radio value="advanced" label="Experimental (may cause problems) scanning and dismissing of multiple YouTube annoyances including paused notification for non-stop playback."/>
+    </radiogroup>
+  </setting>
+</vbox>
+

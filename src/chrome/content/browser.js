@@ -39,6 +39,10 @@ var tabUrl;
 var tab;
 var runningLoopDetection = false;
 
+var CC = Components.classes;
+var CI = Components.interfaces;
+
+
 /* Functions */
 
 function log(str){
@@ -101,6 +105,13 @@ var YouTubeNonStopObj = {
 		return dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US');
 	},
 	pauseContinue: function(){
+		
+		
+		var Prefs = CC["@mozilla.org/preferences-service;1"].getService(CI.nsIPrefService).getBranch("extensions.youtubenonstop.");
+		var ytNonStopFunctionMode = Prefs.getCharPref("functionality");
+
+		// log("YouTubeNonStop: functionality setting mode is set to " + ytNonStopFunctionMode);
+		
 		currentTab = gBrowser.selectedTab;		
 		shouldSwitchTab = false;
 		toRemove = new Array();
@@ -138,12 +149,27 @@ var YouTubeNonStopObj = {
 						}
 					}
 					
-					// Check for login nag screen
-					signInButton = arrayOfDoms[i].getElementById('dismiss-button');
-					if(signInButton){
-						dateNow = new Date();
-						if(YouTubeNonStopObj.isVisible(signInButton)){						
-							log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+					if(ytNonStopFunctionMode == "advanced"){
+						// Check for login nag screen
+						signInButton = arrayOfDoms[i].getElementById('dismiss-button');
+						if(signInButton && !signInButton.parentElement.classList.contains('ytd-feed-nudge-renderer')){ // Ignore dismiss-button with parent of .ytd-feed-nudge-renderer
+							dateNow = new Date();
+							if(YouTubeNonStopObj.isVisible(signInButton)){						
+								log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+								signInButton.click();
+								aButton = signInButton.getElementsByTagName('a');
+								if(aButton && aButton.length){
+									aButton[0].click();
+								}
+								YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
+							}
+						}
+						
+						// Check for randomly appearing login nag screen
+						signInButton = arrayOfDoms[i].querySelector('div.yt-player-error-message-renderer div#dismiss-button');
+						if(signInButton){
+							dateNow = new Date();					
+							log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube randomly appearing signin nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 							signInButton.click();
 							aButton = signInButton.getElementsByTagName('a');
 							if(aButton && aButton.length){
@@ -151,40 +177,27 @@ var YouTubeNonStopObj = {
 							}
 							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 						}
-					}
-					
-					// Check for randomly appearing login nag screen
-					signInButton = arrayOfDoms[i].querySelector('div.yt-player-error-message-renderer div#dismiss-button');
-					if(signInButton){
-						dateNow = new Date();					
-						log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube randomly appearing signin nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
-						signInButton.click();
-						aButton = signInButton.getElementsByTagName('a');
-						if(aButton && aButton.length){
-							aButton[0].click();
-						}
-						YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
-					}
-					
-					// Check for agree button nag screen
-					agreeButton = arrayOfDoms[i].getElementById('introAgreeButton');
-					if(agreeButton){
-						closestPaperDiag = agreeButton.closest('paper-dialog');
 						
-						// Try new YouTube element format
-						if(!closestPaperDiag || closestPaperDiag == null){
-							closestPaperDiag = pauseButton.closest('tp-yt-paper-dialog');
-						}
-						
-						dateNow = new Date();
-						if(closestPaperDiag && closestPaperDiag != null && !closestPaperDiag.getAttribute("aria-hidden")){						
-							log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
-							agreeButton.click();
-							aButton = agreeButton.getElementsByTagName('a');
-							if(aButton && aButton.length){
-								aButton[0].click();
+						// Check for agree button nag screen
+						agreeButton = arrayOfDoms[i].getElementById('introAgreeButton');
+						if(agreeButton){
+							closestPaperDiag = agreeButton.closest('paper-dialog');
+							
+							// Try new YouTube element format
+							if(!closestPaperDiag || closestPaperDiag == null){
+								closestPaperDiag = pauseButton.closest('tp-yt-paper-dialog');
 							}
-							YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
+							
+							dateNow = new Date();
+							if(closestPaperDiag && closestPaperDiag != null && !closestPaperDiag.getAttribute("aria-hidden")){						
+								log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+								agreeButton.click();
+								aButton = agreeButton.getElementsByTagName('a');
+								if(aButton && aButton.length){
+									aButton[0].click();
+								}
+								YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
+							}
 						}
 					}
 										
