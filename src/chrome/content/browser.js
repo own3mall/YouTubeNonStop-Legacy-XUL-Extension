@@ -129,7 +129,7 @@ var YouTubeNonStopObj = {
 				if(!Components.utils.isDeadWrapper(arrayOfDoms[i])){ // Dead check
 					// Check for pause button
 					pauseButton = arrayOfDoms[i].getElementById('confirm-button');
-					if(pauseButton){
+					if(pauseButton && pauseButton.closest('div.buttons.yt-confirm-dialog-renderer').querySelectorAll("yt-button-renderer:not([hidden])").length == 1){ // Only target the right confirmation button based on how many others are actually visible... if there's only one button, assume we should perform this action...
 						dateNow = new Date();
 						closestPaperDiag = pauseButton.closest('paper-dialog');
 						
