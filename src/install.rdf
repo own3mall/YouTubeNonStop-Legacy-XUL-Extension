@@ -8,7 +8,7 @@
     <em:id>own3mall0@gmail.com</em:id>
     <em:name>YouTubeNonStop</em:name>
     <em:description>Kiss the annoying "Video paused. Continue watching?" and "Get the best YouTube experience sign in nag screen" confirmation goodbye!</em:description>
-    <em:version>1.0.10</em:version>
+    <em:version>1.0.11</em:version>
     <em:type>2</em:type>
     
     <em:creator>own3mall</em:creator>
@@ -21,7 +21,7 @@
       <Description>
         <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
         <em:minVersion>27.0</em:minVersion>
-        <em:maxVersion>32.*</em:maxVersion>
+        <em:maxVersion>33.*</em:maxVersion>
       </Description>
     </em:targetApplication>
 

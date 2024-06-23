@@ -21,6 +21,7 @@ var arrayUrlsToTrack = new Array();
 var pauseButton = null;
 var signInButton = null;
 var agreeButton = null;
+var adBlockerDismissButton = null;
 var i = 0;
 var j = 0;
 var toRemove = new Array();
@@ -193,6 +194,28 @@ var YouTubeNonStopObj = {
 								log("YouTubeNonStop: Resuming playback and clicking on the agree button for the YouTube cookies annoying nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
 								agreeButton.click();
 								aButton = agreeButton.getElementsByTagName('a');
+								if(aButton && aButton.length){
+									aButton[0].click();
+								}
+								YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
+							}
+						}
+						
+						// Check for ad blocker not allowed
+						adBlockerDismissButton = arrayOfDoms[i].getElementById('dismiss-button');
+						if(adBlockerDismissButton){
+							closestPaperDiag = adBlockerDismissButton.closest('paper-dialog');
+							
+							// Try new YouTube element format
+							if(!closestPaperDiag || closestPaperDiag == null){
+								closestPaperDiag = adBlockerDismissButton.closest('tp-yt-paper-dialog');
+							}
+							
+							dateNow = new Date();
+							if(closestPaperDiag && closestPaperDiag != null && !closestPaperDiag.getAttribute("aria-hidden") && adBlockerDismissButton.closest('ytd-enforcement-message-view-model') != null){						
+								log("YouTubeNonStop: Resuming playback and clicking on the dismiss button for the YouTube adblocker not allowed nag screen instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
+								adBlockerDismissButton.click();
+								aButton = adBlockerDismissButton.getElementsByTagName('a');
 								if(aButton && aButton.length){
 									aButton[0].click();
 								}
