@@ -33,6 +33,7 @@ var shouldSwitchTab = false;
 var initEvent = null;
 var isTypingInSearchBox = false;
 var aButton = null;
+var bButton = null;
 var closestPaperDiag;
 var tabContainer;
 var tabs;
@@ -161,6 +162,16 @@ var YouTubeNonStopObj = {
 								aButton = signInButton.getElementsByTagName('a');
 								if(aButton && aButton.length){
 									aButton[0].click();
+								}
+								bButton = signInButton.getElementsByTagName('button');
+								if(bButton && aButton.length){
+									bButton[0].click();
+								}
+								if(!aButton.length){
+									aButton = signInButton.closest('tp-yt-paper-dialog');
+									if(aButton){
+										aButton.remove();
+									}
 								}
 								YouTubeNonStopObj.playAudio(arrayOfDoms[i], arrayOfTabs[i], true);
 							}
