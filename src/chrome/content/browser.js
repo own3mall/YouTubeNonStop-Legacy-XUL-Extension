@@ -164,7 +164,7 @@ var YouTubeNonStopObj = {
 									aButton[0].click();
 								}
 								bButton = signInButton.getElementsByTagName('button');
-								if(bButton && aButton.length){
+								if(bButton && bButton.length){
 									bButton[0].click();
 								}
 								if(!aButton.length){
