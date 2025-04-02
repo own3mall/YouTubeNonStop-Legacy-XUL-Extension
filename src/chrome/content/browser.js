@@ -154,7 +154,7 @@ var YouTubeNonStopObj = {
 					if(ytNonStopFunctionMode == "advanced"){
 						// Check for login nag screen
 						signInButton = arrayOfDoms[i].getElementById('dismiss-button');
-						if(signInButton && !signInButton.parentElement.classList.contains('ytd-feed-nudge-renderer')){ // Ignore dismiss-button with parent of .ytd-feed-nudge-renderer
+						if(signInButton && (!signInButton.parentElement.classList.contains('ytd-feed-nudge-renderer') || arrayOfDoms[i].querySelector('a.yt-spec-button-shape-next[href="/premium"]') != null)){ // Ignore dismiss-button with parent of .ytd-feed-nudge-renderer
 							dateNow = new Date();
 							if(YouTubeNonStopObj.isVisible(signInButton)){						
 								log("YouTubeNonStop: Resuming playback and clicking on the Not Now button for the YouTube signin nag screen from instance " + arrayUrls[i] + " on " + dateNow.toLocaleDateString() + " " + dateNow.toLocaleTimeString('en-US') + "!");
